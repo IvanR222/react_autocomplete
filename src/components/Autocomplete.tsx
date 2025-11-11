@@ -26,18 +26,32 @@ export default function Autocomplete({
     if (timerRef.current) {
       window.clearTimeout(timerRef.current);
     }
+
     timerRef.current = window.setTimeout(() => {
       const cur = value;
-      if (cur === lastFilteredRef.current) return;
+
+      if (cur === lastFilteredRef.current) {
+        return;
+      }
+
       lastFilteredRef.current = cur;
 
-      // изменено: проверяем на СТРОГО пустую строку, не просто trim()
+      // изменено: проверяем на СТРОГО пустую строку
       if (value === '') {
         setSuggestions(people);
       } else {
         const trimmed = cur.trim().toLowerCase();
-        setSuggestions(people.filter(p => p.name.toLowerCase().includes(trimmed)));
+
+        // добавлено: если после trim() строка пустая, показываем пустой список
+        if (trimmed === '') {
+          setSuggestions([]);
+        } else {
+          setSuggestions(
+            people.filter(p => p.name.toLowerCase().includes(trimmed)),
+          );
+        }
       }
+
       setOpen(true);
     }, delay);
 
@@ -68,8 +82,9 @@ export default function Autocomplete({
   const handleFocus = () => {
     // изменено: проверяем на СТРОГО пустую строку
     if (value === '') {
-        setSuggestions(people);
+      setSuggestions(people);
     }
+
     setOpen(true);
   };
 
